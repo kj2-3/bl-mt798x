@@ -19,8 +19,8 @@ jobs:
       - name: Compile U-Boot using build script
         run: |
           chmod +x build.sh
-          # 使用自带的 build.sh 传入参数进行编译
-          ./build.sh mt7981 spim-nand
+          # 严格按照脚本要求的环境变量格式传参编译
+          SOC=mt7981 BOARD=spim-nand ./build.sh
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
