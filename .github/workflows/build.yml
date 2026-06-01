@@ -15,12 +15,21 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential libncurses5-dev gawk git gettext uuid-dev zlib1g-dev \
           libssl-dev bison flex rsync texinfo bc u-boot-tools device-tree-compiler wget
-
-      - name: Compile U-Boot using build script
+          
+      - name: Setup Toolchain Manually
         run: |
-          chmod +x build.sh
-          # 严格按照脚本要求的环境变量格式传参编译
-          SOC=mt7981 BOARD=spim-nand ./build.sh
+          # 手动下载标准的 11.2 版本 AArch64 交叉编译器，绕过原仓库脚本下载不稳定的问题
+          wget https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+          tar -xf gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+          # 将编译器临时加到系统环境变量中
+          echo "$(pwd)/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin" >> $GITHUB_PATH
+
+      - name: Compile U-Boot
+        run: |
+          # 检查交叉编译器是否就位
+          aarch64-linux-gnu-gcc -v
+          # 直接调用底层 Makefile 编译
+          make SOC=mt7981 BOARD=spim-nand TOOLCHAIN_PATH=$(pwd)/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
