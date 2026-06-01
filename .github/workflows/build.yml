@@ -1,0 +1,31 @@
+name: Build Bootloader
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev gawk git gettext uuid-dev zlib1g-dev \
+          libssl-dev bison flex rsync texinfo class-dump bc
+
+      - name: Download toolchain
+        run: |
+          ./download-toolchain.sh
+
+      - name: Compile U-Boot
+        run: |
+          make SOC=mt7981 BOARD=spim-nand
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mt7981-uboot-bin
+          path: output/*.bin
