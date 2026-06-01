@@ -14,17 +14,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential libncurses5-dev gawk git gettext uuid-dev zlib1g-dev \
-          libssl-dev bison flex rsync texinfo bc u-boot-tools device-tree-compiler
+          libssl-dev bison flex rsync texinfo bc u-boot-tools device-tree-compiler wget
 
-      - name: Download toolchain
+      - name: Compile U-Boot using build script
         run: |
-          chmod +x download-toolchain.sh
-          ./download-toolchain.sh
-
-      - name: Compile U-Boot
-        run: |
-          make SOC=mt7981 BOARD=spim-nand
-
+          chmod +x build.sh
+          # 使用自带的 build.sh 传入参数进行编译
+          ./build.sh mt7981 spim-nand
+          
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
