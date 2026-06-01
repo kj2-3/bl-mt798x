@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -14,10 +14,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential libncurses5-dev gawk git gettext uuid-dev zlib1g-dev \
-          libssl-dev bison flex rsync texinfo class-dump bc
+          libssl-dev bison flex rsync texinfo bc u-boot-tools device-tree-compiler
 
       - name: Download toolchain
         run: |
+          chmod +x download-toolchain.sh
           ./download-toolchain.sh
 
       - name: Compile U-Boot
